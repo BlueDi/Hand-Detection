@@ -9,9 +9,9 @@ import traceback
 def hand_detection():
     video_capture = cv2.VideoCapture(0)
 
-    while (True):
+    while True:
         try:
-            ret, frame = video_capture.read()
+            _, frame = video_capture.read()
             frame = cv2.flip(frame, 1)
             kernel = np.ones((3, 3), np.uint8)
 
@@ -118,14 +118,25 @@ def hand_detection():
 
         key = cv2.waitKey(10)
         if key == ord('q'):
+            video_capture.release()
+            cv2.destroyAllWindows()
             break
-
-    video_capture.release()
-    cv2.destroyAllWindows()
 
 
 def main():
-    hand_detection()
+    video_capture = cv2.VideoCapture(0)
+
+    while True:
+        _, frame = video_capture.read()
+
+        cv2.imshow('frame', frame)
+        key = cv2.waitKey(10)
+        if key != -1:
+            video_capture.release()
+            break
+
+    if key == ord('v'):
+        hand_detection()
 
 
 if __name__ == '__main__':
