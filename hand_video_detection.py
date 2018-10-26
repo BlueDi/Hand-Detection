@@ -128,9 +128,13 @@ def main():
     while True:
         _, frame = video_capture.read()
 
+        cv2.putText(frame, 'Welcome', (0, 50), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                    (255, 0, 0), 3, cv2.LINE_AA)
+
         cv2.imshow('frame', frame)
         key = cv2.waitKey(10)
         if key != -1:
+            cv2.destroyAllWindows()
             video_capture.release()
             break
 
