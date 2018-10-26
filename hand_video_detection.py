@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 
 import numpy as np
 import cv2
@@ -6,7 +6,7 @@ import math
 import traceback
 
 
-def hand_detection():
+def hand_detection(lower_bound_color, upper_bound_color):
     video_capture = cv2.VideoCapture(0)
 
     while True:
@@ -20,10 +20,7 @@ def hand_detection():
             cv2.rectangle(frame, (300, 50), (550, 300), (0, 255, 0), 0)
             hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
 
-            lower_skin = np.array([0, 50, 120], dtype=np.uint8)
-            upper_skin = np.array([180, 150, 250], dtype=np.uint8)
-
-            mask = cv2.inRange(hsv, lower_skin, upper_skin)
+            mask = cv2.inRange(hsv, lower_bound_color, upper_bound_color)
             mask = cv2.dilate(mask, kernel, iterations=4)
             erosion = cv2.erode(mask, kernel, iterations=2)
             erosion = cv2.GaussianBlur(erosion, (5, 5), 100)
@@ -125,6 +122,8 @@ def hand_detection():
 
 def main():
     video_capture = cv2.VideoCapture(0)
+    lower_skin = np.array([0, 50, 120], dtype=np.uint8)
+    upper_skin = np.array([180, 150, 250], dtype=np.uint8)
 
     while True:
         _, frame = video_capture.read()
@@ -136,7 +135,7 @@ def main():
             break
 
     if key == ord('v'):
-        hand_detection()
+        hand_detection(lower_skin, upper_skin)
 
 
 if __name__ == '__main__':
