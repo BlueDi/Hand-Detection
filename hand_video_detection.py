@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import math
 import traceback
+import color_detection as cd
 
 
 def hand_detection(lower_bound_color, upper_bound_color):
@@ -122,8 +123,8 @@ def hand_detection(lower_bound_color, upper_bound_color):
 
 def main():
     video_capture = cv2.VideoCapture(0)
-    lower_skin = np.array([0, 50, 120], dtype=np.uint8)
-    upper_skin = np.array([180, 150, 250], dtype=np.uint8)
+    lower_color = np.array([0, 50, 120], dtype=np.uint8)
+    upper_color = np.array([180, 150, 250], dtype=np.uint8)
 
     while True:
         _, frame = video_capture.read()
@@ -139,7 +140,9 @@ def main():
             break
 
     if key == ord('v'):
-        hand_detection(lower_skin, upper_skin)
+        hand_detection(lower_color, upper_color)
+    elif key == ord('h'):
+        cd.draw_contours(lower_color, upper_color)
 
 
 if __name__ == '__main__':
