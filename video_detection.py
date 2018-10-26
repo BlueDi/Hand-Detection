@@ -4,15 +4,6 @@ import numpy as np
 import cv2
 import math
 import traceback
-import sys
-import color_detection as cd
-
-
-def detection_area():
-    left = False
-    if len(sys.argv) > 1 and sys.argv[1] == 'left':
-        left = True
-    return left
 
 
 def hand_detection(lower_bound_color, upper_bound_color, left=False):
@@ -134,28 +125,10 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
 
 
 def main():
-    left = detection_area()
-    video_capture = cv2.VideoCapture(0)
     lower_color = np.array([0, 50, 120], dtype=np.uint8)
     upper_color = np.array([180, 150, 250], dtype=np.uint8)
 
-    while True:
-        _, frame = video_capture.read()
-
-        cv2.putText(frame, 'Welcome', (0, 50), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                    (255, 0, 0), 3, cv2.LINE_AA)
-
-        cv2.imshow('VCOM Project', frame)
-        key = cv2.waitKey(10)
-        if key != -1:
-            cv2.destroyAllWindows()
-            video_capture.release()
-            break
-
-    if key == ord('v'):
-        hand_detection(lower_color, upper_color, left)
-    elif key == ord('h'):
-        cd.draw_contours(lower_color, upper_color)
+    hand_detection(lower_color, upper_color)
 
 
 if __name__ == '__main__':
