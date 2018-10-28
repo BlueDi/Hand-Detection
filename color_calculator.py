@@ -33,8 +33,9 @@ def captureCamera():
             cap.release()
             return
         elif key != -1:
-            roi = frame[innerRectangleYIni:innerRectangleYFin,
-                        innerRectangleXIni:innerRectangleXFin]
+            roi = frame[innerRectangleYIni +
+                        1:innerRectangleYFin, innerRectangleXIni +
+                        1:innerRectangleXFin]
             hsvRoi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
             cv2.imshow('roi', roi)
             cv2.imshow('hsv roi', hsvRoi)
