@@ -3,6 +3,7 @@
 import numpy as np
 import cv2
 import sys
+import color_calculator as cc
 import color_detection as cd
 import video_detection as vd
 
@@ -35,6 +36,7 @@ def main():
             break
 
     if key == ord('v'):
+        lower_color, upper_color = cc.captureCamera()
         vd.hand_detection(lower_color, upper_color, left)
     elif key == ord('h'):
         cd.draw_contours(lower_color, upper_color)
