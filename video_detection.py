@@ -5,8 +5,62 @@ import cv2
 import math
 import traceback
 
+def captureCamera():
+    cap = cv2.VideoCapture(0)
+    img = None
+
+    outerRectangleXIni = 300
+    outerRectangleXFin = 550
+    outerRectangleYIni = 50
+    outerRectangleYFin = 300
+    innerRectangleXIni = 400
+    innerRectangleXFin = 450
+    innerRectangleYIni = 150
+    innerRectangleYFin = 200
+
+    while True:
+        ret, frame = cap.read()
+        frame = cv2.flip(frame, 1)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.rectangle(frame, (outerRectangleXIni, outerRectangleYIni), (outerRectangleXFin, outerRectangleYFin), (0, 255, 0), 0)
+        cv2.rectangle(frame, (innerRectangleXIni, innerRectangleYIni), (innerRectangleXFin, innerRectangleYFin), (255, 0, 0), 0)
+        cv2.putText(frame, 'Please center your hand in the square', (0, 35), font, 1, (255, 0, 0), 3, cv2.LINE_AA)
+        cv2.imshow('Camera', frame)
+        key = cv2.waitKey(1)
+
+        if key is key == ord('v'):
+            img = frame
+            roi = img[innerRectangleYIni:innerRectangleYFin, innerRectangleXIni:innerRectangleXFin]
+            break
+        if key is key == ord('q'):
+            break
+    cap.release()
+    hsvRoi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+    print('min H = {}, min S = {}, min V = {}; max H = {}, max S = {}, max V = {}'.format(hsvRoi[:, :, 0].min(),
+                                                                                          hsvRoi[:, :, 1].min(),
+                                                                                          hsvRoi[:, :, 2].min(),
+                                                                                          hsvRoi[:, :, 0].max(),
+                                                                                          hsvRoi[:, :, 1].max(),
+                                                                                          hsvRoi[:, :, 2].max()))
+
+    lower = np.array([hsvRoi[:, :, 0].min(), hsvRoi[:, :, 1].min(), hsvRoi[:, :, 2].min()])
+    upper = np.array([hsvRoi[:, :, 0].max(), hsvRoi[:, :, 1].max(), hsvRoi[:, :, 2].max()])
+
+    cv2.destroyAllWindows()
+    # cv2.imshow('roi', roi)
+    # cv2.imshow('hsvroi', hsvRoi)
+    return [lower, upper]
+
 
 def hand_detection(lower_bound_color, upper_bound_color, left=False):
+
+    hsv_limits = captureCamera()
+    print hsv_limits
+
+    if hsv_limits is not None:
+        lower_bound_color = hsv_limits[0]
+        upper_bound_color = hsv_limits[1]
+
     video_capture = cv2.VideoCapture(0)
 
     while True:
@@ -26,8 +80,9 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
 
             mask = cv2.inRange(hsv, lower_bound_color, upper_bound_color)
             mask = cv2.dilate(mask, kernel, iterations=4)
-            erosion = cv2.erode(mask, kernel, iterations=2)
-            erosion = cv2.GaussianBlur(erosion, (5, 5), 100)
+            #erosion = cv2.erode(mask, kernel, iterations=2)
+            mask = cv2.GaussianBlur(mask, (5, 5), 100)
+            erosion = cv2.erode(mask, kernel, iterations=4)
 
             _, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE,
                                                       cv2.CHAIN_APPROX_SIMPLE)
