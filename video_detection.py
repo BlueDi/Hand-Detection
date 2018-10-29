@@ -34,7 +34,7 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
 
             cnt = max(contours, key=lambda x: cv2.contourArea(x))
 
-            l = analyse_defects(cnt)
+            l = analyse_defects(cnt, roi)
             analyse_contours(frame, cnt, l + 1)
 
             show_results(mask, erosion, frame)
@@ -50,7 +50,7 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
             break
 
 
-def analyse_defects(cnt):
+def analyse_defects(cnt, roi):
     epsilon = 0.0005 * cv2.arcLength(cnt, True)
     approx = cv2.approxPolyDP(cnt, epsilon, True)
 
