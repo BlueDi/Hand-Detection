@@ -36,9 +36,7 @@ def captureCamera():
             roi = frame[innerRectangleYIni +
                         1:innerRectangleYFin, innerRectangleXIni +
                         1:innerRectangleXFin]
-            hsvRoi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-            cv2.imshow('roi', roi)
-            cv2.imshow('hsv roi', hsvRoi)
+            display_result(roi)
             approved = wait_approval()
             if approved:
                 break
@@ -59,6 +57,12 @@ def captureCamera():
 
     cv2.destroyAllWindows()
     return [lower, upper]
+
+
+def display_result(roi):
+    hsvRoi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+    roi_result = np.concatenate((roi, hsvRoi))
+    cv2.imshow('ROI Result', roi_result)
 
 
 def wait_approval():
