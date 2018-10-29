@@ -36,8 +36,11 @@ def main():
             break
 
     if key == ord('v'):
-        lower_color, upper_color = cc.captureCamera(left)
-        vd.hand_detection(lower_color, upper_color, left)
+        try:
+            lower_color, upper_color = cc.captureCamera(left)
+            vd.hand_detection(lower_color, upper_color, left)
+        except TypeError:
+            print 'Did not calculate a valid color bound.'
     elif key == ord('h'):
         cd.draw_contours(lower_color, upper_color)
 
