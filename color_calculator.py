@@ -4,17 +4,24 @@ import numpy as np
 import cv2
 
 
-def captureCamera():
+def captureCamera(left=False):
     cap = cv2.VideoCapture(0)
 
     outerRectangleXIni = 300
-    outerRectangleXFin = 550
     outerRectangleYIni = 50
+    outerRectangleXFin = 550
     outerRectangleYFin = 300
     innerRectangleXIni = 400
-    innerRectangleXFin = 450
     innerRectangleYIni = 150
+    innerRectangleXFin = 450
     innerRectangleYFin = 200
+
+    if left:
+        move_to_left = 250
+        outerRectangleXIni = outerRectangleXIni - move_to_left
+        outerRectangleXFin = outerRectangleXFin - move_to_left
+        innerRectangleXIni = innerRectangleXIni - move_to_left
+        innerRectangleXFin = innerRectangleXFin - move_to_left
 
     while True:
         ret, frame = cap.read()
@@ -31,7 +38,7 @@ def captureCamera():
         key = cv2.waitKey(1)
         if key == ord('q'):
             cap.release()
-            return
+            return None
         elif key != -1:
             roi = frame[innerRectangleYIni +
                         1:innerRectangleYFin, innerRectangleXIni +
