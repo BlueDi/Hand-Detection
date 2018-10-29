@@ -37,13 +37,6 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
             epsilon = 0.0005 * cv2.arcLength(cnt, True)
             approx = cv2.approxPolyDP(cnt, epsilon, True)
 
-            hull = cv2.convexHull(cnt)
-
-            areahull = cv2.contourArea(hull)
-            areacnt = cv2.contourArea(cnt)
-
-            arearatio = ((areahull - areacnt) / areacnt) * 100
-
             hull = cv2.convexHull(approx, returnPoints=False)
             defects = cv2.convexityDefects(approx, hull)
 
@@ -70,44 +63,7 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
                     cv2.circle(roi, far, 3, [255, 0, 0], -1)
                 cv2.line(roi, start, end, [0, 255, 0], 2)
 
-            l += 1
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            if l == 1:
-                if areacnt < 2000:
-                    cv2.putText(frame, 'Put hand in the box', (0, 50), font, 2,
-                                (0, 0, 255), 3, cv2.LINE_AA)
-                else:
-                    if arearatio < 12:
-                        cv2.putText(frame, '0', (0, 50), font, 2, (0, 0, 255),
-                                    3, cv2.LINE_AA)
-                    elif arearatio < 17.5:
-                        cv2.putText(frame, 'Fixe', (0, 50), font, 2,
-                                    (0, 0, 255), 3, cv2.LINE_AA)
-                    else:
-                        cv2.putText(frame, '1', (0, 50), font, 2, (0, 0, 255),
-                                    3, cv2.LINE_AA)
-            elif l == 2:
-                cv2.putText(frame, '2', (0, 50), font, 2, (0, 0, 255), 3,
-                            cv2.LINE_AA)
-            elif l == 3:
-                if arearatio < 27:
-                    cv2.putText(frame, '3', (0, 50), font, 2, (0, 0, 255), 3,
-                                cv2.LINE_AA)
-                else:
-                    cv2.putText(frame, 'ok', (0, 50), font, 2, (0, 0, 255), 3,
-                                cv2.LINE_AA)
-            elif l == 4:
-                cv2.putText(frame, '4', (0, 50), font, 2, (0, 0, 255), 3,
-                            cv2.LINE_AA)
-            elif l == 5:
-                cv2.putText(frame, '5', (0, 50), font, 2, (0, 0, 255), 3,
-                            cv2.LINE_AA)
-            elif l == 6:
-                cv2.putText(frame, 'reposition', (0, 50), font, 2, (0, 0, 255),
-                            3, cv2.LINE_AA)
-            else:
-                cv2.putText(frame, 'reposition', (10, 50), font, 2,
-                            (0, 0, 255), 3, cv2.LINE_AA)
+            analyse_contours(frame, cnt, l + 1)
 
             show_results(mask, erosion, frame)
 
@@ -120,6 +76,50 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
             video_capture.release()
             cv2.destroyAllWindows()
             break
+
+
+def analyse_contours(frame, cnt, l):
+    hull = cv2.convexHull(cnt)
+
+    areahull = cv2.contourArea(hull)
+    areacnt = cv2.contourArea(cnt)
+
+    arearatio = ((areahull - areacnt) / areacnt) * 100
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    if l == 1:
+        if areacnt < 2000:
+            cv2.putText(frame, 'Put hand in the box', (0, 50), font, 2,
+                        (0, 0, 255), 3, cv2.LINE_AA)
+        else:
+            if arearatio < 12:
+                cv2.putText(frame, '0', (0, 50), font, 2, (0, 0, 255), 3,
+                            cv2.LINE_AA)
+            elif arearatio < 17.5:
+                cv2.putText(frame, 'Fixe', (0, 50), font, 2, (0, 0, 255), 3,
+                            cv2.LINE_AA)
+            else:
+                cv2.putText(frame, '1', (0, 50), font, 2, (0, 0, 255), 3,
+                            cv2.LINE_AA)
+    elif l == 2:
+        cv2.putText(frame, '2', (0, 50), font, 2, (0, 0, 255), 3, cv2.LINE_AA)
+    elif l == 3:
+        if arearatio < 27:
+            cv2.putText(frame, '3', (0, 50), font, 2, (0, 0, 255), 3,
+                        cv2.LINE_AA)
+        else:
+            cv2.putText(frame, 'ok', (0, 50), font, 2, (0, 0, 255), 3,
+                        cv2.LINE_AA)
+    elif l == 4:
+        cv2.putText(frame, '4', (0, 50), font, 2, (0, 0, 255), 3, cv2.LINE_AA)
+    elif l == 5:
+        cv2.putText(frame, '5', (0, 50), font, 2, (0, 0, 255), 3, cv2.LINE_AA)
+    elif l == 6:
+        cv2.putText(frame, 'reposition', (0, 50), font, 2, (0, 0, 255), 3,
+                    cv2.LINE_AA)
+    else:
+        cv2.putText(frame, 'reposition', (10, 50), font, 2, (0, 0, 255), 3,
+                    cv2.LINE_AA)
 
 
 def show_results(mask, erosion, frame):
