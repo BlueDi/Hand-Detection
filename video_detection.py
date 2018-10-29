@@ -109,9 +109,7 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
                 cv2.putText(frame, 'reposition', (10, 50), font, 2,
                             (0, 0, 255), 3, cv2.LINE_AA)
 
-            cv2.imshow('before erosion', mask)
-            cv2.imshow('erosion', erosion)
-            cv2.imshow('frame', frame)
+            show_results(mask, erosion, frame)
 
         except Exception as e:
             print e
@@ -122,6 +120,16 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
             video_capture.release()
             cv2.destroyAllWindows()
             break
+
+
+def show_results(mask, erosion, frame):
+    combine_masks = np.concatenate((mask, erosion), axis=0)
+    height, _, _ = frame.shape
+    _, width = combine_masks.shape
+    masks_result = cv2.resize(combine_masks, dsize=(width, height))
+    masks_result = cv2.cvtColor(masks_result, cv2.COLOR_GRAY2BGR)
+    result_image = np.concatenate((frame, masks_result), axis=1)
+    cv2.imshow('Hand Detection', result_image)
 
 
 def main():
