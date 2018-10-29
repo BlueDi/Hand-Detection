@@ -25,10 +25,9 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
             hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
 
             mask = cv2.inRange(hsv, lower_bound_color, upper_bound_color)
-            mask = cv2.dilate(mask, kernel, iterations=4)
-            #erosion = cv2.erode(mask, kernel, iterations=2)
-            mask = cv2.GaussianBlur(mask, (5, 5), 100)
-            erosion = cv2.erode(mask, kernel, iterations=4)
+            mask = cv2.dilate(mask, kernel, iterations=5)
+            erosion = cv2.erode(mask, kernel, iterations=5)
+            erosion = cv2.GaussianBlur(erosion, (5, 5), 100)
 
             _, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE,
                                                       cv2.CHAIN_APPROX_SIMPLE)
