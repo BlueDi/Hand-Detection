@@ -6,56 +6,70 @@ import math
 import traceback
 
 
-def hand_detection(lower_bound_color,
-                   upper_bound_color,
-                   video=True,
-                   left=False):
-    video_capture = cv2.VideoCapture(0)
+def start(lower_bound_color,
+          upper_bound_color,
+          video=True,
+          path=None,
+          left=False):
+    if path != None:
+        print 'in input'
+        frame = cv2.imread(path)
+        hand_detection(frame, lower_bound_color, upper_bound_color, left)
+        cv2.waitKey(0)
+    else:
+        print 'not in input'
+        video_capture = cv2.VideoCapture(0)
 
-    while True:
-        try:
-            _, frame = video_capture.read()
-            frame = cv2.flip(frame, 1)
-            kernel = np.ones((3, 3), np.uint8)
+        while True:
+            try:
+                _, frame = video_capture.read()
+                frame = cv2.flip(frame, 1)
 
-            if left:
-                roi = frame[100:300, 100:300]
-                cv2.rectangle(frame, (100, 100), (300, 300), (0, 255, 0), 0)
-            else:
-                roi = frame[50:300, 300:550]
-                cv2.rectangle(frame, (300, 50), (550, 300), (0, 255, 0), 0)
+                hand_detection(frame, lower_bound_color, upper_bound_color,
+                               left)
 
-            hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+            except Exception as e:
+                print e
+                pass
 
-            mask = cv2.inRange(hsv, lower_bound_color, upper_bound_color)
-            mask = cv2.dilate(mask, kernel, iterations=5)
-            erosion = cv2.erode(mask, kernel, iterations=5)
-            erosion = cv2.GaussianBlur(erosion, (5, 5), 100)
+            if not video:
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+                break
 
-            _, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE,
-                                                      cv2.CHAIN_APPROX_SIMPLE)
+            key = cv2.waitKey(10)
+            if key == ord('q'):
+                video_capture.release()
+                cv2.destroyAllWindows()
+                break
 
-            cnt = max(contours, key=lambda x: cv2.contourArea(x))
 
-            l = analyse_defects(cnt, roi)
-            analyse_contours(frame, cnt, l + 1)
+def hand_detection(frame, lower_bound_color, upper_bound_color, left):
+    kernel = np.ones((3, 3), np.uint8)
 
-            show_results(mask, erosion, frame)
+    if left:
+        roi = frame[100:300, 100:300]
+        cv2.rectangle(frame, (100, 100), (300, 300), (0, 255, 0), 0)
+    else:
+        roi = frame[50:300, 300:550]
+        cv2.rectangle(frame, (300, 50), (550, 300), (0, 255, 0), 0)
 
-        except Exception as e:
-            print e
-            pass
+    hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
 
-        if not video:
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-            break
+    mask = cv2.inRange(hsv, lower_bound_color, upper_bound_color)
+    mask = cv2.dilate(mask, kernel, iterations=5)
+    erosion = cv2.erode(mask, kernel, iterations=5)
+    erosion = cv2.GaussianBlur(erosion, (5, 5), 100)
 
-        key = cv2.waitKey(10)
-        if key == ord('q'):
-            video_capture.release()
-            cv2.destroyAllWindows()
-            break
+    _, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE,
+                                              cv2.CHAIN_APPROX_SIMPLE)
+
+    cnt = max(contours, key=lambda x: cv2.contourArea(x))
+
+    l = analyse_defects(cnt, roi)
+    analyse_contours(frame, cnt, l + 1)
+
+    show_results(mask, erosion, frame)
 
 
 def analyse_defects(cnt, roi):
@@ -148,7 +162,7 @@ def main():
     lower_color = np.array([0, 50, 120], dtype=np.uint8)
     upper_color = np.array([180, 150, 250], dtype=np.uint8)
 
-    hand_detection(lower_color, upper_color)
+    start(lower_color, upper_color)
 
 
 if __name__ == '__main__':
