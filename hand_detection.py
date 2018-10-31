@@ -2,21 +2,21 @@
 
 import numpy as np
 import cv2
-import sys
+import argparse
 import color_calculator as cc
 import color_detection as cd
 import video_detection as vd
 
 
-def detection_area():
-    left = False
-    if len(sys.argv) > 1 and sys.argv[1] == 'left':
-        left = True
-    return left
+def analyse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-l', '--left', action='store_true', help='Place ROI on the left')
+    return parser.parse_args()
 
 
 def main():
-    left = detection_area()
+    args = analyse_args()
     video_capture = cv2.VideoCapture(0)
     lower_color = np.array([0, 50, 120], dtype=np.uint8)
     upper_color = np.array([180, 150, 250], dtype=np.uint8)
@@ -37,10 +37,10 @@ def main():
 
     if key == ord('v'):
         try:
-            lower_color, upper_color = cc.captureCamera(left)
-            vd.hand_detection(lower_color, upper_color, left)
+            lower_color, upper_color = cc.captureCamera(args.left)
+            vd.hand_detection(lower_color, upper_color, left=args.left)
         except TypeError:
-            print 'Did not calculate a valid color bound.'
+            print 'Did not calculate the color bound.'
     elif key == ord('h'):
         cd.draw_contours(lower_color, upper_color)
 
