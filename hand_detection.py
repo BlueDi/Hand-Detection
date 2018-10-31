@@ -12,6 +12,11 @@ def analyse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-l', '--left', action='store_true', help='Place ROI on the left')
+    parser.add_argument(
+        '-s',
+        '--shot',
+        action='store_true',
+        help='Not video, just a single shot')
     return parser.parse_args()
 
 
@@ -38,7 +43,8 @@ def main():
     if key == ord('v'):
         try:
             lower_color, upper_color = cc.captureCamera(args.left)
-            vd.hand_detection(lower_color, upper_color, left=args.left)
+            vd.hand_detection(
+                lower_color, upper_color, video=not args.shot, left=args.left)
         except TypeError:
             print 'Did not calculate the color bound.'
     elif key == ord('h'):

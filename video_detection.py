@@ -6,7 +6,10 @@ import math
 import traceback
 
 
-def hand_detection(lower_bound_color, upper_bound_color, left=False):
+def hand_detection(lower_bound_color,
+                   upper_bound_color,
+                   video=True,
+                   left=False):
     video_capture = cv2.VideoCapture(0)
 
     while True:
@@ -42,6 +45,11 @@ def hand_detection(lower_bound_color, upper_bound_color, left=False):
         except Exception as e:
             print e
             pass
+
+        if not video:
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            break
 
         key = cv2.waitKey(10)
         if key == ord('q'):
