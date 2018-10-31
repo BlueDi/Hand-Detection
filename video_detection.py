@@ -12,12 +12,10 @@ def start(lower_bound_color,
           path=None,
           left=False):
     if path != None:
-        print 'in input'
         frame = cv2.imread(path)
         hand_detection(frame, lower_bound_color, upper_bound_color, left)
         cv2.waitKey(0)
     else:
-        print 'not in input'
         video_capture = cv2.VideoCapture(0)
 
         while True:
