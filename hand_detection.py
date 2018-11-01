@@ -9,6 +9,7 @@ import video_detection as vd
 
 
 def analyse_args():
+    """Parses the args"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-i', '--input', default=None, help='Place ROI on the left')
@@ -23,6 +24,7 @@ def analyse_args():
 
 
 def main():
+    """Main function of the app"""
     args = analyse_args()
     video_capture = cv2.VideoCapture(0)
     lower_color = np.array([0, 50, 120], dtype=np.uint8)

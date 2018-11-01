@@ -5,6 +5,7 @@ import cv2
 
 
 def filter_color(rgb_image, lower_bound_color, upper_bound_color):
+    """Thresholds the image to the color bounds"""
     hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
     cv2.imshow('HSV Image', hsv_image)
     mask = cv2.inRange(hsv_image, lower_bound_color, upper_bound_color)
@@ -12,12 +13,14 @@ def filter_color(rgb_image, lower_bound_color, upper_bound_color):
 
 
 def getContours(binary_image):
+    """Calculates the contours of the image"""
     _, contours, hierarchy = cv2.findContours(binary_image, cv2.RETR_TREE,
                                               cv2.CHAIN_APPROX_SIMPLE)
     return contours
 
 
 def draw_hand_contour(binary_image, rgb_image, contours):
+    """Draws the contours to the image"""
     black_image = np.zeros([binary_image.shape[0], binary_image.shape[1], 3],
                            'uint8')
     for c in contours:
@@ -38,6 +41,7 @@ def draw_hand_contour(binary_image, rgb_image, contours):
 
 
 def get_contour_center(contour):
+    """Calcualtes the center of the contour"""
     M = cv2.moments(contour)
     cx = -1
     cy = -1
@@ -48,6 +52,7 @@ def get_contour_center(contour):
 
 
 def draw_contours(lower_bound_color, upper_bound_color):
+    """Calculates the contours and draws them in the picture"""
     video_capture = cv2.VideoCapture(0)
 
     while True:
@@ -67,6 +72,7 @@ def draw_contours(lower_bound_color, upper_bound_color):
 
 
 def main():
+    """Main function of the app"""
     lower_color = np.array([0, 50, 120], dtype=np.uint8)
     upper_color = np.array([180, 150, 250], dtype=np.uint8)
 

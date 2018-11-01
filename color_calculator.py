@@ -5,6 +5,15 @@ import cv2
 
 
 def captureCamera(left=False):
+    """
+   Creates a color bound based on a ROI
+   It analyses the blue square and calculates the maximum and minimum HSV values inside the square.
+   Those maximum and minimum will be the color bound used to detect the hand.
+   Parameters
+   ----------
+   left : bool, optional
+      Set the ROI on the left side of the screen
+   """
     cap = cv2.VideoCapture(0)
 
     outerRectangleXIni = 300
@@ -62,14 +71,15 @@ def captureCamera(left=False):
 
 
 def display_result(roi):
+    """Draws images of the selected ROI"""
     hsvRoi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
     roi_result = np.concatenate((roi, hsvRoi))
     cv2.imshow('ROI Result', roi_result)
 
 
 def wait_approval():
+    """Checks if User wants the selected ROI"""
     approval = False
-
     key = cv2.waitKey(0)
     if key != -1 and key != ord('n'):
         approval = True
@@ -77,6 +87,7 @@ def wait_approval():
 
 
 def main():
+    """Main function of the app"""
     captureCamera()
 
 

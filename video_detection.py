@@ -11,6 +11,23 @@ def start(lower_bound_color,
           video=True,
           path=None,
           left=False):
+    """
+   Initializes the detection process.
+   It analyses the parameters and executes the hand detection accordingly.
+   Parameters
+   ----------
+   lower_bound_color : array
+      The min of HSV values to be detected
+   upper_bound_color : array
+      The max of HSV values to be detected
+   video : bool, optional
+      False if single image
+      True if video stream
+   path : str, optional
+      Path for the image to be analysed
+   left : bool, optional
+      Set the ROI on the left side of the screen
+   """
     if path != None:
         frame = cv2.imread(path)
         hand_detection(frame, lower_bound_color, upper_bound_color, left)
@@ -43,6 +60,20 @@ def start(lower_bound_color,
 
 
 def hand_detection(frame, lower_bound_color, upper_bound_color, left):
+    """
+   Initializes the detection process.
+   It analyses the parameters and executes the hand detection accordingly.
+   Parameters
+   ----------
+   frame : array-like
+      The frame to be analysed
+   lower_bound_color : array
+      The min of HSV values to be detected
+   upper_bound_color : array
+      The max of HSV values to be detected
+   left : bool, optional
+      Set the ROI on the left side of the screen
+   """
     kernel = np.ones((3, 3), np.uint8)
 
     if left:
@@ -71,6 +102,17 @@ def hand_detection(frame, lower_bound_color, upper_bound_color, left):
 
 
 def analyse_defects(cnt, roi):
+    """
+   Calculates how many convexity defects are on the image.
+   A convexity defect is a area that is inside the convexity hull but does not belong to the object.
+   Those defects in our case represent the division between fingers.
+   Parameters
+   ----------
+   cnt : array-like
+      Contour of max area on the image, in this case, the contour of the hand
+   roi : array-like
+      Region of interest where should be drawn the found convexity defects
+   """
     epsilon = 0.0005 * cv2.arcLength(cnt, True)
     approx = cv2.approxPolyDP(cnt, epsilon, True)
 
@@ -103,6 +145,19 @@ def analyse_defects(cnt, roi):
 
 
 def analyse_contours(frame, cnt, l):
+    """
+   Writes to the image the signal of the hand.
+   The hand signals can be the numbers from 0 to 5, the ‘ok’ signal, and the ‘all right’ symbol.
+   The signals is first sorted by the number of convexity defects. Then, if the number of convexity defects is 1, 2, or 3, the area ratio is to be analysed.
+   Parameters
+   ----------
+   frame : array-like
+      The frame to be analysed
+   cnt : array-like
+      Contour of max area on the image, in this case, the contour of the hand
+   l : int
+      Number of convexity defects
+   """
     hull = cv2.convexHull(cnt)
 
     areahull = cv2.contourArea(hull)
@@ -147,6 +202,18 @@ def analyse_contours(frame, cnt, l):
 
 
 def show_results(binary_mask, mask, frame):
+    """
+   Shows the image with the results on it.
+   The image is a result of a combination of the image with the result on it, the original captured ROI, and the ROI after optimizations.
+   Parameters
+   ----------
+   binary_mask : array-like
+      ROI as it is captured
+   mask : array-like
+      ROI after optimizations
+   frame : array-like
+      Frame to be displayed
+   """
     combine_masks = np.concatenate((binary_mask, mask), axis=0)
     height, _, _ = frame.shape
     _, width = combine_masks.shape
@@ -157,6 +224,7 @@ def show_results(binary_mask, mask, frame):
 
 
 def main():
+    """Main function of the app"""
     lower_color = np.array([0, 50, 120], dtype=np.uint8)
     upper_color = np.array([180, 150, 250], dtype=np.uint8)
 
