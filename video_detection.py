@@ -146,8 +146,8 @@ def analyse_contours(frame, cnt, l):
                     cv2.LINE_AA)
 
 
-def show_results(mask, erosion, frame):
-    combine_masks = np.concatenate((mask, erosion), axis=0)
+def show_results(binary_mask, mask, frame):
+    combine_masks = np.concatenate((binary_mask, mask), axis=0)
     height, _, _ = frame.shape
     _, width = combine_masks.shape
     masks_result = cv2.resize(combine_masks, dsize=(width, height))
