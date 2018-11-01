@@ -6,8 +6,8 @@ import math
 import traceback
 
 
-def start(lower_bound_color,
-          upper_bound_color,
+def start(avg_color,
+          max_sensibility,
           video=True,
           path=None,
           left=False):
@@ -28,6 +28,22 @@ def start(lower_bound_color,
    left : bool, optional
       Set the ROI on the left side of the screen
    """
+
+    # change this value to better adapt to environment light
+    hSensibility = 3
+    sSensibility = 15
+    vSensibility = 15
+
+    if hSensibility > max_sensibility[0]:
+        hSensibility = max_sensibility[0]
+    if sSensibility > max_sensibility[1]:
+        sSensibility = max_sensibility[1]
+    if vSensibility > max_sensibility[2]:
+        vSensibility = max_sensibility[2]
+
+    lower_bound_color = np.array([avg_color[0] - hSensibility, avg_color[1] - sSensibility, avg_color[2] - vSensibility])
+    upper_bound_color = np.array([avg_color[0] + hSensibility, avg_color[1] + sSensibility, avg_color[2] + vSensibility])
+
     if path != None:
         frame = cv2.imread(path)
         hand_detection(frame, lower_bound_color, upper_bound_color, left)
@@ -147,7 +163,7 @@ def analyse_defects(cnt, roi):
 def analyse_contours(frame, cnt, l):
     """
    Writes to the image the signal of the hand.
-   The hand signals can be the numbers from 0 to 5, the ‘ok’ signal, and the ‘all right’ symbol.
+   The hand signals can be the numbers from 0 to 5, the 'ok' signal, and the 'all right' symbol.
    The signals is first sorted by the number of convexity defects. Then, if the number of convexity defects is 1, 2, or 3, the area ratio is to be analysed.
    Parameters
    ----------

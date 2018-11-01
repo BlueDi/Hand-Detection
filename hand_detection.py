@@ -46,10 +46,10 @@ def main():
 
     if key == ord('v'):
         try:
-            lower_color, upper_color = cc.captureCamera(args.left)
+            avg_color, max_sensibility = cc.captureCamera(args.left)
             vd.start(
-                lower_color,
-                upper_color,
+                avg_color,
+                max_sensibility,
                 video=not args.shot,
                 path=args.input,
                 left=args.left)

@@ -65,9 +65,25 @@ def captureCamera(left=False):
         [hsvRoi[:, :, 0].min(), hsvRoi[:, :, 1].min(), hsvRoi[:, :, 2].min()])
     upper = np.array(
         [hsvRoi[:, :, 0].max(), hsvRoi[:, :, 1].max(), hsvRoi[:, :, 2].max()])
+    h = hsvRoi[:, :, 0]
+    s = hsvRoi[:, :, 1]
+    v = hsvRoi[:, :, 2]
+    hAverage = np.average(h)
+    sAverage = np.average(s)
+    vAverage = np.average(v)
+
+    hMaxSensibility = max(abs(lower[0] - hAverage), abs(upper[0] - hAverage))
+    sMaxSensibility = max(abs(lower[1] - sAverage), abs(upper[1] - sAverage))
+    vMaxSensibility = max(abs(lower[2] - vAverage), abs(upper[2] - vAverage))
+    print("average = ", np.array([hAverage, sAverage, vAverage]))
+    print("min = ", lower)
+    print("max = ", upper)
+    print("hMaxSensibility = ", hMaxSensibility)
+    print("sMaxSensibility = ", sMaxSensibility)
+    print("vMaxSensibility = ", vMaxSensibility)
 
     cv2.destroyAllWindows()
-    return [lower, upper]
+    return np.array([[hAverage, sAverage, vAverage], [hMaxSensibility, sMaxSensibility, vMaxSensibility]])
 
 
 def display_result(roi):
