@@ -6,6 +6,19 @@ import math
 import traceback
 
 
+def nothing(x):
+    pass
+
+
+def apply_sensibility(avg_color, newHSens, newSSens, newVSens, maxSensibility):
+    hSens = (newHSens * maxSensibility[0]) / 100
+    SSens = (newSSens * maxSensibility[1]) / 100
+    VSens = (newVSens * maxSensibility[2]) / 100
+    lower_bound_color = np.array([avg_color[0] - hSens, avg_color[1] - SSens, avg_color[2] - VSens])
+    upper_bound_color = np.array([avg_color[0] + hSens, avg_color[1] + SSens, avg_color[2] + VSens])
+    return np.array([lower_bound_color, upper_bound_color])
+
+
 def start(avg_color,
           max_sensibility,
           video=True,
@@ -29,20 +42,17 @@ def start(avg_color,
       Set the ROI on the left side of the screen
    """
 
-    # change this value to better adapt to environment light
-    hSensibility = 3
-    sSensibility = 15
-    vSensibility = 15
+    # change this value to better adapt to environment light (percentage values)
+    hSensibility = 90
+    sSensibility = 80
+    vSensibility = 80
 
-    if hSensibility > max_sensibility[0]:
-        hSensibility = max_sensibility[0]
-    if sSensibility > max_sensibility[1]:
-        sSensibility = max_sensibility[1]
-    if vSensibility > max_sensibility[2]:
-        vSensibility = max_sensibility[2]
+    apply_sensibility(avg_color, hSensibility, sSensibility, vSensibility, max_sensibility)
 
-    lower_bound_color = np.array([avg_color[0] - hSensibility, avg_color[1] - sSensibility, avg_color[2] - vSensibility])
-    upper_bound_color = np.array([avg_color[0] + hSensibility, avg_color[1] + sSensibility, avg_color[2] + vSensibility])
+    cv2.namedWindow('Hand Detection')
+    cv2.createTrackbar('HSensb', 'Hand Detection', hSensibility, 100, nothing)
+    cv2.createTrackbar('SSensb', 'Hand Detection', sSensibility, 100, nothing)
+    cv2.createTrackbar('VSensb', 'Hand Detection', vSensibility, 100, nothing)
 
     if path != None:
         frame = cv2.imread(path)
@@ -55,6 +65,12 @@ def start(avg_color,
             try:
                 _, frame = video_capture.read()
                 frame = cv2.flip(frame, 1)
+
+                newHSens = cv2.getTrackbarPos('HSensb', 'Hand Detection')
+                newSSens = cv2.getTrackbarPos('SSensb', 'Hand Detection')
+                newVSens = cv2.getTrackbarPos('VSensb', 'Hand Detection')
+
+                lower_bound_color, upper_bound_color = apply_sensibility(avg_color, newHSens, newSSens, newVSens, max_sensibility)
 
                 hand_detection(frame, lower_bound_color, upper_bound_color,
                                left)
