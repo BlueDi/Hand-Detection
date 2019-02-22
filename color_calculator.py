@@ -6,14 +6,14 @@ import cv2
 
 def captureCamera(left=False):
     """
-   Creates a color bound based on a ROI
-   It analyses the blue square and calculates the maximum, minimum and average HSV values inside the square.
-   Those maximum and minimum values will be used to determine the maximum sensibility possible, and the average will be the color bound used to detect the hand.
-   Parameters
-   ----------
-   left : bool, optional
+    Creates a color bound based on a ROI
+    It analyses the blue square and calculates the maximum, minimum and average HSV values inside the square.
+    Those maximum and minimum values will be used to determine the maximum sensibility possible, and the average will be the color bound used to detect the hand.
+    Parameters
+    ----------
+    left : bool, optional
       Set the ROI on the left side of the screen
-   """
+    """
     cap = cv2.VideoCapture(0)
 
     outerRectangleXIni = 300
@@ -77,7 +77,8 @@ def captureCamera(left=False):
     vMaxSensibility = max(abs(lower[2] - vAverage), abs(upper[2] - vAverage))
 
     cv2.destroyAllWindows()
-    return np.array([[hAverage, sAverage, vAverage], [hMaxSensibility, sMaxSensibility, vMaxSensibility]])
+    return np.array([[hAverage, sAverage, vAverage],
+                     [hMaxSensibility, sMaxSensibility, vMaxSensibility]])
 
 
 def display_result(roi):
@@ -103,3 +104,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

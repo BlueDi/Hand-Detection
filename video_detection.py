@@ -11,59 +11,58 @@ def nothing(x):
 
 
 def apply_sensibility(avg_color, newHSens, newSSens, newVSens, maxSensibility):
-   """
-   Applies sensibility values for each value of HSV, taking into account the maximum sensibility possible.
-   It analyses the parameters and executes the hand detection accordingly.
-   Parameters
-   ----------
-   avg_color : array
+    """
+    Applies sensibility values for each value of HSV, taking into account the maximum sensibility possible.
+    It analyses the parameters and executes the hand detection accordingly.
+    Parameters
+    ----------
+    avg_color : array
       The average of HSV values to be detected
-   newHSens : int
+    newHSens : int
       Percentage of sensibility to apply to Hue
-   newSSens : int
+    newSSens : int
       Percentage of sensibility to apply to Saturation
-   newVSens : int
+    newVSens : int
       Percentage of sensibility to apply to Value
-   maxSensibility : array
+    maxSensibility : array
       The maximum error margin of HSV values to be detected
     """
     hSens = (newHSens * maxSensibility[0]) / 100
     SSens = (newSSens * maxSensibility[1]) / 100
     VSens = (newVSens * maxSensibility[2]) / 100
-    lower_bound_color = np.array([avg_color[0] - hSens, avg_color[1] - SSens, avg_color[2] - VSens])
-    upper_bound_color = np.array([avg_color[0] + hSens, avg_color[1] + SSens, avg_color[2] + VSens])
+    lower_bound_color = np.array(
+        [avg_color[0] - hSens, avg_color[1] - SSens, avg_color[2] - VSens])
+    upper_bound_color = np.array(
+        [avg_color[0] + hSens, avg_color[1] + SSens, avg_color[2] + VSens])
     return np.array([lower_bound_color, upper_bound_color])
 
 
-def start(avg_color,
-          max_sensibility,
-          video=True,
-          path=None,
-          left=False):
+def start(avg_color, max_sensibility, video=True, path=None, left=False):
     """
-   Initializes the detection process.
-   It analyses the parameters and executes the hand detection accordingly.
-   Parameters
-   ----------
-   avg_color : array
+    Initializes the detection process.
+    It analyses the parameters and executes the hand detection accordingly.
+    Parameters
+    ----------
+    avg_color : array
       The average of HSV values to be detected
-   max_sensibility : array
+    max_sensibility : array
       The maximum error margin of HSV values to be detected
-   video : bool, optional
+    video : bool, optional
       False if single image
       True if video stream
-   path : str, optional
+    path : str, optional
       Path for the image to be analysed
-   left : bool, optional
+    left : bool, optional
       Set the ROI on the left side of the screen
-   """
+    """
 
     # change this value to better adapt to environment light (percentage values)
     hSensibility = 100
     sSensibility = 100
     vSensibility = 100
 
-    apply_sensibility(avg_color, hSensibility, sSensibility, vSensibility, max_sensibility)
+    apply_sensibility(avg_color, hSensibility, sSensibility, vSensibility,
+                      max_sensibility)
 
     cv2.namedWindow('Hand Detection')
     cv2.createTrackbar('HSensb', 'Hand Detection', hSensibility, 100, nothing)
@@ -88,7 +87,8 @@ def start(avg_color,
                 newVSens = cv2.getTrackbarPos('VSensb', 'Hand Detection')
 
                 # and apply the new sensibility values
-                lower_bound_color, upper_bound_color = apply_sensibility(avg_color, newHSens, newSSens, newVSens, max_sensibility)
+                lower_bound_color, upper_bound_color = apply_sensibility(
+                    avg_color, newHSens, newSSens, newVSens, max_sensibility)
 
                 hand_detection(frame, lower_bound_color, upper_bound_color,
                                left)
@@ -111,19 +111,19 @@ def start(avg_color,
 
 def hand_detection(frame, lower_bound_color, upper_bound_color, left):
     """
-   Initializes the detection process.
-   It analyses the parameters and executes the hand detection accordingly.
-   Parameters
-   ----------
-   frame : array-like
+    Initializes the detection process.
+    It analyses the parameters and executes the hand detection accordingly.
+    Parameters
+    ----------
+    frame : array-like
       The frame to be analysed
-   lower_bound_color : array
+    lower_bound_color : array
       The min of HSV values to be detected
-   upper_bound_color : array
+    upper_bound_color : array
       The max of HSV values to be detected
-   left : bool, optional
+    left : bool, optional
       Set the ROI on the left side of the screen
-   """
+    """
     kernel = np.ones((3, 3), np.uint8)
 
     if left:
@@ -153,16 +153,16 @@ def hand_detection(frame, lower_bound_color, upper_bound_color, left):
 
 def analyse_defects(cnt, roi):
     """
-   Calculates how many convexity defects are on the image.
-   A convexity defect is a area that is inside the convexity hull but does not belong to the object.
-   Those defects in our case represent the division between fingers.
-   Parameters
-   ----------
-   cnt : array-like
+    Calculates how many convexity defects are on the image.
+    A convexity defect is a area that is inside the convexity hull but does not belong to the object.
+    Those defects in our case represent the division between fingers.
+    Parameters
+    ----------
+    cnt : array-like
       Contour of max area on the image, in this case, the contour of the hand
-   roi : array-like
+    roi : array-like
       Region of interest where should be drawn the found convexity defects
-   """
+    """
     epsilon = 0.0005 * cv2.arcLength(cnt, True)
     approx = cv2.approxPolyDP(cnt, epsilon, True)
 
@@ -196,18 +196,18 @@ def analyse_defects(cnt, roi):
 
 def analyse_contours(frame, cnt, l):
     """
-   Writes to the image the signal of the hand.
-   The hand signals can be the numbers from 0 to 5, the 'ok' signal, and the 'all right' symbol.
-   The signals is first sorted by the number of convexity defects. Then, if the number of convexity defects is 1, 2, or 3, the area ratio is to be analysed.
-   Parameters
-   ----------
-   frame : array-like
+    Writes to the image the signal of the hand.
+    The hand signals can be the numbers from 0 to 5, the 'ok' signal, and the 'all right' symbol.
+    The signals is first sorted by the number of convexity defects. Then, if the number of convexity defects is 1, 2, or 3, the area ratio is to be analysed.
+    Parameters
+    ----------
+    frame : array-like
       The frame to be analysed
-   cnt : array-like
+    cnt : array-like
       Contour of max area on the image, in this case, the contour of the hand
-   l : int
+    l : int
       Number of convexity defects
-   """
+    """
     hull = cv2.convexHull(cnt)
 
     areahull = cv2.contourArea(hull)
@@ -253,17 +253,17 @@ def analyse_contours(frame, cnt, l):
 
 def show_results(binary_mask, mask, frame):
     """
-   Shows the image with the results on it.
-   The image is a result of a combination of the image with the result on it, the original captured ROI, and the ROI after optimizations.
-   Parameters
-   ----------
-   binary_mask : array-like
+    Shows the image with the results on it.
+    The image is a result of a combination of the image with the result on it, the original captured ROI, and the ROI after optimizations.
+    Parameters
+    ----------
+    binary_mask : array-like
       ROI as it is captured
-   mask : array-like
+    mask : array-like
       ROI after optimizations
-   frame : array-like
+    frame : array-like
       Frame to be displayed
-   """
+    """
     combine_masks = np.concatenate((binary_mask, mask), axis=0)
     height, _, _ = frame.shape
     _, width = combine_masks.shape
@@ -283,3 +283,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
