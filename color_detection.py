@@ -14,7 +14,12 @@ def filter_color(rgb_image, lower_bound_color, upper_bound_color):
 
 def getContours(binary_image):
     """Calculates the contours of the image"""
-    _, contours, hierarchy = cv2.findContours(binary_image, cv2.RETR_TREE,
+    (opencv_version, _, _) = cv2.__version__.split(".")
+    if int(opencv_version) < 4:
+        _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE,
+                                              cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE,
                                               cv2.CHAIN_APPROX_SIMPLE)
     return contours
 
